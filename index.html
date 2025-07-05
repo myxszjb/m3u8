@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>视频播放器</title>
+  <style>
+    /* 基础样式，让播放器全屏 */
+    body, html {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+      overflow: hidden;
+      background-color: #000;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    }
+    #dplayer {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+    }
+    /* 当没有视频URL时显示的提示信息样式 */
+    .usage-info {
+      display: none; /* 默认隐藏 */
+      color: white;
+      text-align: center;
+      padding: 40px;
+      margin: auto;
+      max-width: 800px;
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+    }
+    .usage-info h1 {
+        margin-bottom: 20px;
+    }
+    .usage-info code {
+        background-color: #333;
+        padding: 5px 10px;
+        border-radius: 5px;
+        word-break: break-all;
+        display: inline-block;
+        margin-top: 10px;
+    }
+  </style>
+  <!-- 引入 DPlayer 的 CSS 文件 -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/dplayer@latest/dist/DPlayer.min.css" />
+</head>
+<body>
+
+  <!-- DPlayer 播放器容器 -->
+  <div id="dplayer"></div>
+
+  <!-- 提示信息容器 -->
+  <div id="usage" class="usage-info">
+    <h1>M3U8 播放器</h1>
+    <p>请在当前页面链接的末尾加上 <code>?url=</code> 参数来指定要播放的 M3U8 视频链接。</p>
+    <p><strong>例如:</strong></p>
+    <code>.../index.html?url=https://your-video-link.m3u8</code>
+  </div>
+
+  <!-- 引入 HLS.js 和 DPlayer.js -->
+  <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
+  <script src="https://cdn.jsdelivr.net/npm/dplayer@latest/dist/DPlayer.min.js"></script>
+
+  <script>
+    // 页面加载后立即执行
+    document.addEventListener('DOMContentLoaded', function() {
+      // 1. 从浏览器地址栏获取 URL 参数
+      const params = new URLSearchParams(window.location.search);
+      const videoUrl = params.get('url');
+
+      // 2. 判断是否存在 videoUrl
+      if (videoUrl) {
+        // 如果存在，初始化 DPlayer
+        const dp = new DPlayer({
+          container: document.getElementById('dplayer'),
+          autoplay: true,
+          video: {
+            url: decodeURIComponent(videoUrl), // 解码URL，以防有特殊字符
+            type: 'hls',
+          },
+        });
+      } else {
+        // 如果不存在，隐藏播放器，显示提示信息
+        document.getElementById('dplayer').style.display = 'none';
+        document.getElementById('usage').style.display = 'block';
+      }
+    });
+  </script>
+</body>
+</html>
